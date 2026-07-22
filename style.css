@@ -487,24 +487,69 @@ body {
     }
 }
 
-/* Responsive Scaling */
-@media (max-width: 480px) {
+/* Responsive Scaling & Mobile Optimization */
+@media (max-width: 768px) {
+    /* Hide the custom cursor on touch interfaces to allow native finger scrolling and clicks */
+    #custom-cursor {
+        display: none !important;
+    }
+    
+    .custom-cursor-active {
+        cursor: auto !important;
+    }
+    
+    .custom-cursor-active button, 
+    .custom-cursor-active a,
+    .custom-cursor-active .weapon-slot {
+        cursor: auto !important;
+    }
+
     .card-container {
-        padding: 30px 20px;
+        padding: 30px 20px 25px;
+        width: 95%;
     }
     
     #apology-card h1 {
-        font-size: 30px;
+        font-size: 28px;
+    }
+    
+    #apology-card p {
+        font-size: 15px;
+        margin-bottom: 25px;
+    }
+    
+    #success-card {
+        padding: 40px 20px 30px;
+    }
+    
+    #success-card h2 {
+        font-size: 28px;
+        margin-bottom: 12px;
+    }
+    
+    #success-card p {
+        font-size: 15px;
+        margin-bottom: 25px;
+    }
+    
+    .success-avatar-wrapper {
+        width: 120px;
+        height: 120px;
+        margin-bottom: 20px;
     }
     
     .weapons-tray {
-        gap: 10px;
+        gap: 8px;
     }
     
     .weapon-slot {
-        width: 55px;
-        height: 55px;
-        font-size: 24px;
+        width: 50px;
+        height: 50px;
+        font-size: 22px;
+    }
+    
+    .boyfriend-avatar {
+        max-height: 140px;
     }
 }
 

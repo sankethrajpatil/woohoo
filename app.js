@@ -84,15 +84,17 @@ function initAudio() {
 // Custom Cursor Positioning
 const mouse = { x: -100, y: -100, isDown: false, lastX: 0, lastY: 0, vx: 0, vy: 0 };
 
-window.addEventListener("mousemove", (e) => {
-    mouse.x = e.clientX;
-    mouse.y = e.clientY;
-    
-    // Calculate mouse velocity for leaf blowing physics
+function updateMousePosition(clientX, clientY) {
+    mouse.x = clientX;
+    mouse.y = clientY;
     mouse.vx = mouse.x - mouse.lastX;
     mouse.vy = mouse.y - mouse.lastY;
     mouse.lastX = mouse.x;
     mouse.lastY = mouse.y;
+}
+
+window.addEventListener("mousemove", (e) => {
+    updateMousePosition(e.clientX, e.clientY);
 
     if (customCursor.style.display !== "none") {
         customCursor.style.left = `${mouse.x}px`;
@@ -107,6 +109,43 @@ window.addEventListener("mousedown", () => {
 });
 
 window.addEventListener("mouseup", () => {
+    mouse.isDown = false;
+    customCursor.classList.remove("blowing");
+});
+
+// Mobile Touch Events for Blower Position
+window.addEventListener("touchstart", (e) => {
+    mouse.isDown = true;
+    customCursor.classList.add("blowing");
+    initAudio();
+    
+    if (e.touches.length > 0) {
+        const touch = e.touches[0];
+        mouse.lastX = touch.clientX;
+        mouse.lastY = touch.clientY;
+        updateMousePosition(touch.clientX, touch.clientY);
+    }
+}, { passive: true });
+
+window.addEventListener("touchmove", (e) => {
+    if (e.touches.length > 0) {
+        const touch = e.touches[0];
+        updateMousePosition(touch.clientX, touch.clientY);
+
+        if (customCursor.style.display !== "none") {
+            // Offset blower 70px above finger on touch screens so it is not hidden under the hand
+            customCursor.style.left = `${mouse.x}px`;
+            customCursor.style.top = `${mouse.y - 70}px`;
+        }
+        
+        // Prevent scrolling when dragging on the leaf canvas
+        if (e.target === leafCanvas) {
+            e.preventDefault();
+        }
+    }
+}, { passive: false });
+
+window.addEventListener("touchend", () => {
     mouse.isDown = false;
     customCursor.classList.remove("blowing");
 });
@@ -355,17 +394,30 @@ function showCard(cardElement) {
 }
 
 // --- Card 1 Event Handlers ---
-btnForgive.addEventListener("click", () => {
+const handleForgiveRedirect = () => {
     const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
     window.open(url, "_blank");
+};
+btnForgive.addEventListener("click", handleForgiveRedirect);
+btnForgive.addEventListener("touchstart", (e) => {
+    e.preventDefault();
+    initAudio();
+    handleForgiveRedirect();
 });
 
-btnAngry.addEventListener("click", () => {
+const handleAngryClick = () => {
     // Transition to Vent Anger Game
     showCard(gameCard);
     // Custom cursor will represent selected weapon in game!
     setupGameCursor();
+};
+btnAngry.addEventListener("click", handleAngryClick);
+btnAngry.addEventListener("touchstart", (e) => {
+    e.preventDefault();
+    initAudio();
+    handleAngryClick();
 });
+
 
 // --- Sound Synthesizer via Web Audio API ---
 function playSound(type) {
@@ -510,7 +562,7 @@ function setupGameCursor() {
 }
 
 // --- Game Logic: Hitting the Avatar ---
-avatarWrapper.addEventListener("mousedown", (e) => {
+function registerHit(clientX, clientY) {
     if (angerLevel <= 0) return;
     
     // Trigger hit animation wrapper
@@ -522,19 +574,33 @@ avatarWrapper.addEventListener("mousedown", (e) => {
     playSound(activeWeapon.sound);
     
     // Spawn floating damage numbers/text
-    createFloatingText(e.clientX, e.clientY);
+    createFloatingText(clientX, clientY);
     
     // Spawn tomato/cream splat overlays
     if (activeWeapon.id === "tomato") {
-        createSplat(e.clientX, e.clientY, "tomato-splat");
+        createSplat(clientX, clientY, "tomato-splat");
     } else if (activeWeapon.id === "pie") {
-        createSplat(e.clientX, e.clientY, "cream-splat");
+        createSplat(clientX, clientY, "cream-splat");
     }
     
     // Reduce Anger Level
     angerLevel = Math.max(angerLevel - activeWeapon.angerReduction, 0);
     updateAngerMeter();
+}
+
+avatarWrapper.addEventListener("mousedown", (e) => {
+    if (e.button !== 0) return;
+    registerHit(e.clientX, e.clientY);
 });
+
+avatarWrapper.addEventListener("touchstart", (e) => {
+    e.preventDefault(); // Prevent double triggers on touch devices
+    initAudio();
+    if (e.touches.length > 0) {
+        const touch = e.touches[0];
+        registerHit(touch.clientX, touch.clientY);
+    }
+}, { passive: false });
 
 // Calculate HUD updates
 function updateAngerMeter() {
@@ -622,7 +688,17 @@ function createSplat(clientX, clientY, className) {
 }
 
 // --- Card 3 (Success) Handler ---
-btnSuccessTalk.addEventListener("click", () => {
+const handleSuccessRedirection = () => {
     const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
     window.open(url, "_blank");
+};
+btnSuccessTalk.addEventListener("click", handleSuccessRedirection);
+btnSuccessTalk.addEventListener("touchstart", (e) => {
+    e.preventDefault();
+    initAudio();
+    handleSuccessRedirection();
 });
+
+// Global user interaction bindings to unlock AudioContext on iOS/Safari
+window.addEventListener("click", initAudio);
+window.addEventListener("touchstart", initAudio);
