@@ -151,7 +151,7 @@ class Leaf {
         this.y = -50 - Math.random() * 200; // start slightly above screen if reset
         this.size = 14 + Math.random() * 18;
         this.vx = (Math.random() - 0.5) * 1.5;
-        this.vy = 1 + Math.random() * 2;
+        this.vy = 1 + Math.random() * 2.5; // falling speed
         this.angle = Math.random() * Math.PI * 2;
         this.rotationSpeed = (Math.random() - 0.5) * 0.05;
         
@@ -171,6 +171,7 @@ class Leaf {
         // Leaf shape types
         this.shapeType = Math.floor(Math.random() * 3);
         this.offScreen = false;
+        this.isBlown = false; // Tracks if leaf has been affected by the wind blower
     }
 
     update() {
@@ -179,9 +180,9 @@ class Leaf {
         const dy = this.y - mouse.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
         
-        // Wind radius is larger when clicking (blowing hard)
-        const windRadius = mouse.isDown ? 220 : 130;
-        const windStrength = mouse.isDown ? 0.35 : 0.15;
+        // Larger wind radius to match the enlarged 150px wind blower cursor
+        const windRadius = mouse.isDown ? 280 : 180;
+        const windStrength = mouse.isDown ? 0.45 : 0.22;
 
         if (distance < windRadius && isLeafBlowingActive) {
             const force = (windRadius - distance) / windRadius;
@@ -193,7 +194,8 @@ class Leaf {
             this.vy += Math.sin(forceAngle) * force * windStrength * (8 + speedFactor);
             
             // Spin faster when blown
-            this.rotationSpeed += (Math.random() - 0.5) * 0.2;
+            this.rotationSpeed += (Math.random() - 0.5) * 0.25;
+            this.isBlown = true; // Mark as blown, meaning it will clear permanently off-screen
         }
 
         // Apply friction and gravity
@@ -205,13 +207,17 @@ class Leaf {
         this.angle += this.rotationSpeed;
         this.rotationSpeed *= 0.98;
 
-        // Check if out of bounds (offscreen)
-        if (
-            this.x < -100 || 
-            this.x > leafCanvas.width + 100 || 
-            this.y > leafCanvas.height + 100
-        ) {
-            this.offScreen = true;
+        // Leaf looping vs clearing logic
+        if (this.y > leafCanvas.height + 50) {
+            if (this.isBlown) {
+                this.offScreen = true; // Clear permanently if it was blown away
+            } else {
+                this.reset(); // Loop back to top if it just fell naturally
+            }
+        }
+
+        if (this.x < -100 || this.x > leafCanvas.width + 100) {
+            this.offScreen = true; // Clear if blown off the sides
         }
     }
 
@@ -486,7 +492,7 @@ weaponButtons.forEach(btn => {
         weaponInfoText.innerText = activeWeapon.description;
         
         // Update Custom Cursor representation
-        customCursor.innerHTML = `<span style="font-size: 42px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));">${activeWeapon.emoji}</span>`;
+        customCursor.innerHTML = `<span style="font-size: 80px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));">${activeWeapon.emoji}</span>`;
         
         // Play short sound check
         initAudio();
@@ -500,7 +506,7 @@ function setupGameCursor() {
     customCursor.style.display = "flex";
     customCursor.style.justifyContent = "center";
     customCursor.style.alignEvents = "none";
-    customCursor.innerHTML = `<span style="font-size: 42px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));">${activeWeapon.emoji}</span>`;
+    customCursor.innerHTML = `<span style="font-size: 80px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));">${activeWeapon.emoji}</span>`;
 }
 
 // --- Game Logic: Hitting the Avatar ---
