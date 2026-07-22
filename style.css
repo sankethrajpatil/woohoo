@@ -1,0 +1,561 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght=300;400;600;800&family=Playfair+Display:ital,wght@0,700;1,600&display=swap');
+
+:root {
+    --primary-rose: #ff6584;
+    --primary-sunset: #ff8e53;
+    --gradient-romantic: linear-gradient(135deg, #ffeef2 0%, #fff3e3 50%, #f4e8ff 100%);
+    --gradient-card: linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.4) 100%);
+    --gradient-btn-rose: linear-gradient(135deg, #ff5e62 0%, #ff9966 100%);
+    --gradient-btn-green: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    --font-ui: 'Outfit', sans-serif;
+    --font-serif: 'Playfair Display', serif;
+    --shadow-premium: 0 20px 50px rgba(255, 101, 132, 0.12);
+    --shadow-card: 0 8px 32px 0 rgba(31, 38, 135, 0.08);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    font-family: var(--font-ui);
+    background: var(--gradient-romantic);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+/* Hide standard cursor where custom cursor is active */
+.custom-cursor-active {
+    cursor: none;
+}
+.custom-cursor-active button, 
+.custom-cursor-active a,
+.custom-cursor-active .weapon-slot {
+    cursor: none; /* Keep cursor hidden on hover, but we'll show cursor blower */
+}
+
+/* Custom Blower Cursor */
+#custom-cursor {
+    position: fixed;
+    width: 100px;
+    height: 100px;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%) rotate(0deg);
+    transition: transform 0.08s ease-out;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+#custom-cursor svg {
+    width: 100%;
+    height: 100%;
+}
+
+#custom-cursor.blowing {
+    animation: blow-vibe 0.15s infinite alternate;
+}
+
+@keyframes blow-vibe {
+    0% { transform: translate(-50%, -50%) scale(1) rotate(-5deg); }
+    100% { transform: translate(-50%, -50%) scale(1.1) rotate(5deg); }
+}
+
+/* Leaf Canvas overlay */
+#leaf-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+    display: block;
+}
+
+/* Tutorial Hint overlay */
+#tutorial-hint {
+    position: absolute;
+    bottom: 8%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 101;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    padding: 12px 24px;
+    border-radius: 50px;
+    box-shadow: var(--shadow-card);
+    font-weight: 600;
+    color: #4a4a4a;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    pointer-events: none;
+    animation: bounce-slow 2s infinite ease-in-out;
+    transition: opacity 0.5s ease;
+}
+
+@keyframes bounce-slow {
+    0%, 100% { transform: translate(-50%, 0); }
+    50% { transform: translate(-50%, -10px); }
+}
+
+/* Floating romantic particles in background */
+.bg-decorations {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.floating-heart {
+    position: absolute;
+    color: rgba(255, 101, 132, 0.15);
+    font-size: 24px;
+    animation: float-up 10s infinite linear;
+    bottom: -50px;
+}
+
+@keyframes float-up {
+    0% {
+        transform: translateY(0) rotate(0deg) scale(0.8);
+        opacity: 0;
+    }
+    10% { opacity: 0.8; }
+    90% { opacity: 0.8; }
+    100% {
+        transform: translateY(-110vh) rotate(360deg) scale(1.2);
+        opacity: 0;
+    }
+}
+
+/* Base Card Styles */
+.card-container {
+    width: 90%;
+    max-width: 520px;
+    padding: 40px;
+    border-radius: 30px;
+    background: var(--gradient-card);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: var(--shadow-premium), var(--shadow-card);
+    text-align: center;
+    z-index: 10;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+    position: absolute;
+    display: none;
+}
+
+.card-container.active {
+    display: block;
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+}
+
+/* Apology Card specific styling */
+#apology-card .apology-emoji {
+    font-size: 72px;
+    margin-bottom: 20px;
+    display: inline-block;
+    animation: float-wiggle 4s infinite ease-in-out;
+}
+
+@keyframes float-wiggle {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(5deg); }
+}
+
+#apology-card h1 {
+    font-family: var(--font-serif);
+    font-size: 38px;
+    color: #2c2c2c;
+    margin-bottom: 16px;
+    line-height: 1.2;
+    font-weight: 700;
+}
+
+#apology-card p {
+    font-size: 17px;
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 35px;
+    padding: 0 10px;
+}
+
+/* Premium Buttons Layout */
+.btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.btn-premium {
+    padding: 16px 28px;
+    border-radius: 50px;
+    border: none;
+    font-family: var(--font-ui);
+    font-size: 16px;
+    font-weight: 700;
+    color: white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease, filter 0.2s ease;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    outline: none;
+}
+
+.btn-premium:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.btn-premium:active {
+    transform: translateY(-1px) scale(0.99);
+}
+
+.btn-forgive {
+    background: var(--gradient-btn-green);
+    animation: heart-beat 2.5s infinite ease-in-out;
+}
+
+@keyframes heart-beat {
+    0%, 100% { transform: scale(1); }
+    15% { transform: scale(1.04); }
+    30% { transform: scale(1.02); }
+    45% { transform: scale(1.05); }
+}
+
+.btn-angry {
+    background: var(--gradient-btn-rose);
+}
+
+.btn-angry:hover {
+    animation: shake-fast 0.5s infinite;
+}
+
+@keyframes shake-fast {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    20% { transform: translate(-2px, 1px) rotate(-1deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    60% { transform: translate(-2px, -1px) rotate(-0.5deg); }
+    80% { transform: translate(1px, 2px) rotate(1deg); }
+}
+
+/* Anger Venting Game Layout */
+#game-card {
+    max-width: 600px;
+}
+
+.game-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.game-title {
+    font-family: var(--font-serif);
+    font-size: 28px;
+    color: #2c2c2c;
+    margin-bottom: 4px;
+}
+
+.game-subtitle {
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 15px;
+}
+
+/* Anger Meter HUD */
+.hud-container {
+    width: 100%;
+    margin-bottom: 25px;
+}
+
+.hud-labels {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 700;
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+#anger-status-text {
+    color: var(--primary-rose);
+}
+
+.meter-outer {
+    width: 100%;
+    height: 18px;
+    background: rgba(0, 0, 0, 0.06);
+    border-radius: 10px;
+    padding: 3px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    overflow: hidden;
+}
+
+.meter-inner {
+    height: 100%;
+    width: 100%;
+    border-radius: 8px;
+    background: linear-gradient(90deg, #ff9966 0%, #ff5e62 100%);
+    box-shadow: 0 0 10px rgba(255, 94, 98, 0.5);
+    transition: width 0.3s cubic-bezier(0.1, 0.8, 0.3, 1);
+}
+
+/* Character Avatar Box */
+.character-viewport {
+    position: relative;
+    width: 100%;
+    height: 240px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.avatar-wrapper {
+    position: relative;
+    width: 180px;
+    height: 180px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 5;
+}
+
+.boyfriend-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 0.15s ease-out;
+    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+}
+
+/* Interactive Hit Effects */
+.avatar-wrapper.hit .boyfriend-avatar {
+    animation: avatar-hit-anim 0.15s ease-out;
+}
+
+@keyframes avatar-hit-anim {
+    0% { transform: scale(1); }
+    30% { transform: scale(0.85) rotate(-8deg); }
+    70% { transform: scale(1.05) rotate(5deg); }
+    100% { transform: scale(1) rotate(0); }
+}
+
+/* Weapon Bar Styles */
+.weapons-tray {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.weapon-slot {
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid transparent;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 28px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.weapon-slot:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+}
+
+.weapon-slot.active {
+    background: var(--gradient-btn-rose);
+    border-color: #ffffff;
+    box-shadow: 0 6px 15px rgba(255, 94, 98, 0.4);
+    transform: translateY(-8px) scale(1.08);
+}
+
+.weapon-slot.active .weapon-emoji {
+    filter: brightness(1.2) drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+}
+
+.weapon-info {
+    font-size: 12px;
+    font-weight: 800;
+    color: #888;
+    margin-top: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Splat Overlay Container */
+.splat-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 15;
+}
+
+.tomato-splat {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, #ff2a2a 20%, #c40000 50%, rgba(255,0,0,0) 70%);
+    opacity: 0.85;
+    border-radius: 50%;
+    transform: scale(0);
+    animation: splat-grow 0.1s forwards ease-out, splat-slide 4s forwards linear;
+}
+
+.cream-splat {
+    position: absolute;
+    width: 110px;
+    height: 100px;
+    background: radial-gradient(circle, #ffffff 30%, #f4ebd9 65%, rgba(255,255,255,0) 80%);
+    opacity: 0.9;
+    border-radius: 50%;
+    transform: scale(0);
+    animation: splat-grow 0.1s forwards ease-out, splat-slide 5s forwards linear;
+}
+
+@keyframes splat-grow {
+    to { transform: scale(1); }
+}
+
+@keyframes splat-slide {
+    0% { transform: translateY(0) scale(1); opacity: 0.9; }
+    50% { transform: translateY(15px) scale(0.95); opacity: 0.8; }
+    100% { transform: translateY(30px) scale(0.8); opacity: 0; }
+}
+
+/* Floating combat text numbers */
+.floating-hit-text {
+    position: absolute;
+    font-weight: 800;
+    font-size: 20px;
+    color: #ff3366;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 0 10px rgba(255,255,255,0.8);
+    pointer-events: none;
+    z-index: 20;
+    animation: hit-text-float 1.2s forwards cubic-bezier(0.1, 0.8, 0.3, 1);
+}
+
+@keyframes hit-text-float {
+    0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(0.5) translateY(0);
+    }
+    30% {
+        transform: translate(-50%, -50%) scale(1.2) translateY(-20px);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(1) translateY(-80px);
+    }
+}
+
+/* Responsive Scaling */
+@media (max-width: 480px) {
+    .card-container {
+        padding: 30px 20px;
+    }
+    
+    #apology-card h1 {
+        font-size: 30px;
+    }
+    
+    .weapons-tray {
+        gap: 10px;
+    }
+    
+    .weapon-slot {
+        width: 55px;
+        height: 55px;
+        font-size: 24px;
+    }
+}
+
+/* Success Card Specific Styling & Premium Polish */
+#success-card {
+    max-width: 460px;
+    padding: 60px 45px 50px;
+    border: 1.5px solid rgba(255, 255, 255, 0.75);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+    box-shadow: 0 30px 70px rgba(255, 101, 132, 0.2), var(--shadow-card);
+}
+
+.success-avatar-wrapper {
+    width: 160px;
+    height: 160px;
+    margin: 0 auto 35px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Glowing heart ring backdrop behind avatar */
+.success-avatar-wrapper::before {
+    content: '';
+    position: absolute;
+    width: 140%;
+    height: 140%;
+    background: radial-gradient(circle, rgba(255, 101, 132, 0.3) 0%, rgba(255, 101, 132, 0) 70%);
+    z-index: -1;
+    border-radius: 50%;
+    animation: heart-glowing-pulse 3s infinite alternate ease-in-out;
+}
+
+@keyframes heart-glowing-pulse {
+    0% { transform: scale(0.9); opacity: 0.7; filter: blur(2px); }
+    100% { transform: scale(1.15); opacity: 1; filter: blur(5px); }
+}
+
+#success-card h2 {
+    font-family: var(--font-serif);
+    font-size: 36px;
+    color: #1a1a1a;
+    margin-bottom: 16px;
+    font-weight: 700;
+}
+
+#success-card p {
+    font-size: 16.5px;
+    color: #4a4a4a;
+    line-height: 1.7;
+    margin-bottom: 40px;
+    padding: 0 5px;
+}

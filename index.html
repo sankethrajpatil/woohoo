@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I'm Sorry, I Love You ❤️</title>
+    <meta name="description" content="An interactive space to clear away leaves, receive a heartfelt apology, and playfully vent frustration.">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="custom-cursor-active">
+
+    <!-- Background Decorations -->
+    <div class="bg-decorations" id="bg-decorations">
+        <!-- Floating hearts will be generated via JavaScript -->
+    </div>
+
+    <!-- Custom Cursor (Wind Blower) -->
+    <div id="custom-cursor">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" style="filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));">
+            <!-- Handle -->
+            <path d="M16 42 L24 42 L28 26 L16 26 Z" fill="#b0bec5" stroke="#37474f" stroke-width="2.5" stroke-linejoin="round"/>
+            <!-- Main Engine Body -->
+            <rect x="22" y="22" width="24" height="20" rx="6" fill="#ff7043" stroke="#d84315" stroke-width="2.5"/>
+            <!-- Vent Cap -->
+            <circle cx="34" cy="32" r="6" fill="#37474f"/>
+            <path d="M34 26 L34 38 M28 32 L40 32" stroke="#ffffff" stroke-width="2"/>
+            <!-- Nozzle -->
+            <path d="M46 28 L56 25 L56 39 L46 36 Z" fill="#cfd8dc" stroke="#37474f" stroke-width="2.5" stroke-linejoin="round"/>
+            <!-- Wind lines coming out (only visible when blowing/animating) -->
+            <path class="wind-particle" d="M58 29 L64 28 M59 32 L66 32 M58 35 L64 36" stroke="#4fc3f7" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+        </svg>
+    </div>
+
+    <!-- Leaf Blowing Canvas -->
+    <canvas id="leaf-canvas"></canvas>
+
+    <!-- Leaf Clearing Tutorial Hint -->
+    <div id="tutorial-hint">
+        <span>🍃</span>
+        <span>Hold click & run the blower to clear the leaves!</span>
+    </div>
+
+    <!-- 1. Apology Card -->
+    <main class="card-container" id="apology-card">
+        <span class="apology-emoji" aria-hidden="true">🥺</span>
+        <h1>I'm sorry, I really love you</h1>
+        <p>I know I made a mistake and made you upset. I truly value us and want to make things right. Will you forgive me? Please let me know how you feel below.</p>
+        <div class="btn-group">
+            <button class="btn-premium btn-forgive" id="btn-forgive" aria-label="I forgive you, let's talk more">
+                <span>💕</span> I forgive you, let's talk more
+            </button>
+            <button class="btn-premium btn-angry" id="btn-angry" aria-label="I am still angry">
+                <span>😤</span> I am still angry
+            </button>
+        </div>
+    </main>
+
+    <!-- 2. Vent Your Anger Game Card -->
+    <section class="card-container" id="game-card" aria-label="Vent frustration mini-game">
+        <div class="game-header">
+            <h2 class="game-title">Vent Your Frustration! 😤🔨</h2>
+            <p class="game-subtitle">Select an item and tap on me to release your anger!</p>
+        </div>
+
+        <!-- Anger Meter HUD -->
+        <div class="hud-container">
+            <div class="hud-labels">
+                <span>Anger Meter</span>
+                <span id="anger-status-text">Fuming (100%)</span>
+            </div>
+            <div class="meter-outer">
+                <div class="meter-inner" id="anger-bar" style="width: 100%;"></div>
+            </div>
+        </div>
+
+        <!-- Boyfriend Character Viewport -->
+        <div class="character-viewport" id="game-viewport">
+            <div class="avatar-wrapper" id="avatar-wrapper">
+                <img src="assets/boyfriend_normal.png" alt="Apologetic boyfriend avatar" class="boyfriend-avatar" id="boyfriend-avatar">
+            </div>
+            <!-- Splats container for tomato and cream pies -->
+            <div class="splat-container" id="splat-container"></div>
+        </div>
+
+        <!-- Weapon Selection tray -->
+        <div class="weapons-tray" role="radiogroup" aria-label="Choose weapon to hit boyfriend avatar">
+            <button class="weapon-slot active" id="weapon-pillow" role="radio" aria-checked="true" aria-label="Soft Pillow: Gentle punch">
+                <span class="weapon-emoji">🧸</span>
+            </button>
+            <button class="weapon-slot" id="weapon-tomato" role="radio" aria-checked="false" aria-label="Ripe Tomato: Splat hit">
+                <span class="weapon-emoji">🍅</span>
+            </button>
+            <button class="weapon-slot" id="weapon-hammer" role="radio" aria-checked="false" aria-label="Squeaky Hammer: Bouncy squeak">
+                <span class="weapon-emoji">🔨</span>
+            </button>
+            <button class="weapon-slot" id="weapon-pie" role="radio" aria-checked="false" aria-label="Cream Pie: Cream splash">
+                <span class="weapon-emoji">🥧</span>
+            </button>
+        </div>
+        <div class="weapon-info" id="weapon-info-text">🧸 Pillow (Gently bonks)</div>
+    </section>
+
+    <!-- 3. Success Card (Shown when anger is 0%) -->
+    <section class="card-container" id="success-card" aria-label="Anger fully vented">
+        <div class="avatar-wrapper success-avatar-wrapper">
+            <img src="assets/boyfriend_love.png" alt="Happy boyfriend holding a heart avatar" class="boyfriend-avatar">
+        </div>
+        <h2>Feel better now? 💕</h2>
+        <p>I deserve every single hit! I'm really sorry, and I want to make it up to you. Let's talk now, okay?</p>
+        <div class="btn-group">
+            <button class="btn-premium btn-forgive" id="btn-success-talk" aria-label="Okay, let's talk">
+                <span>💬</span> Okay, let's talk!
+            </button>
+        </div>
+    </section>
+
+    <script src="app.js"></script>
+</body>
+</html>
